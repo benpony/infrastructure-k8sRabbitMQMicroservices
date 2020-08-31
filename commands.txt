@@ -1,5 +1,8 @@
 $ minikube delete
 $ minikube start --vm-driver=virtualbox --memory 4096 --cpus 2
+$  minikube addons enable ingress
+
+- - -
 
 # install rabbitmq
 https://github.com/bitnami/charts/
@@ -9,16 +12,16 @@ $ helm search repo bitnami | grep "rabbitmq"
 $ helm install my-rmq bitnami/rabbitmq
 $ helm delete my-rmq bitnami/rabbitmq
 
-# install and set { user: guest pass: secretpassword }
+# install and set { user: admin pass: secretpassword }
 ```
-$ helm install my-rmq \
-  --set auth.username=guest,auth.password=secretpassword \
-    bitnami/rabbitmq
+$ helm install rmq \
+  --set rabbitmq.username=admin,rabbitmq.password=secretpassword,rabbitmq.erlangCookie=secretcookie \
+    stable/rabbitmq
 ```
 ## output
 Credentials:
 
-    echo "Username      : guest"
+    echo "Username      : admin"
     echo "Password      : $(kubectl get secret --namespace default my-rmq-rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 --decode)"
     echo "ErLang Cookie : $(kubectl get secret --namespace default my-rmq-rabbitmq -o jsonpath="{.data.rabbitmq-erlang-cookie}" | base64 --decode)"
 
@@ -57,8 +60,8 @@ $ helm install my-release-name .
 $ helm uninstall my-release-name 
 
 ```
-$ helm upgrade --install py-rmq-consumer .
-$ helm upgrade --install py-rmq-producer .
+$ helm upgrade --install py-rmq-producer ./deployment
+$ helm upgrade --install py-rmq-consumer ./deployment
 ```
 ## output(consumer)
 NOTES:
