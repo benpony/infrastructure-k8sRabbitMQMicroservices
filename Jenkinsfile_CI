@@ -6,7 +6,7 @@ podTemplate(
     label: label,
     containers: [
             containerTemplate(name: 'jnlp', image: 'jenkins/jnlp-slave:alpine'),
-            containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true),
+            containerTemplate(name: 'docker', image: 'docker', ttyEnabled: true),
         ],
         volumes: [
             hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
@@ -45,12 +45,12 @@ podTemplate(
             
             stage('Docker Build') {
                 echo "Building docker image..."
-                //sh "docker build -t $tag -f jenkins-docker/Dockerfile ."
                 sh script: 'docker build ./producer -t benpony/py-producer'
                 sh script: 'docker build ./consumer -t benpony/py-consumer'
             }
 
             stage('Docker Push') {
+                echo "Pushing docker image..."
                 sh script: 'docker push benpony/py-consumer:latest'
                 sh script: 'docker push benpony/py-producer:latest'
             }
