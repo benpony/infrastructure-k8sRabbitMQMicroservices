@@ -8,11 +8,12 @@ podTemplate(containers: [containerTemplate(args: '', command: '', image: 'docker
 			}
 			stage("Build"){
 				checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/benpony/infrastructure-k8sRabbitMQMicroservices.git']]])
-				sh script: "sleep 10s"
+		
 				sh script: "docker build ./producer -t benpony/py-producer"         // "docker build ./src/consumer -t /consumer"
 				sh script: "docker build ./consumer -t benpony/py-consumer"         // "docker build ./src/producer -t /producer"
 			}
 			stage("Push"){
+				
 				sh script: "docker push benpony/py-consumer:latest "                // "docker push evyatare92/consumer"
 				sh script: "docker push benpony/py-producer:latest "                // "docker push evyatare92/producer"
 			}
