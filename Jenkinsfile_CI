@@ -16,7 +16,7 @@ podTemplate(
 			}
 			stage("Build"){
 				checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/benpony/infrastructure-k8sRabbitMQMicroservices.git']]])
-				sh script: "systemctl start docker"
+
 				sh script: "docker build ./producer -t benpony/py-producer"         // "docker build ./src/consumer -t /consumer"
 				sh script: "docker build ./consumer -t benpony/py-consumer"         // "docker build ./src/producer -t /producer"
 			}
