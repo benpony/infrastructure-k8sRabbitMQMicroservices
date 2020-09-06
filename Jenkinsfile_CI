@@ -1,8 +1,9 @@
 podTemplate(
 	label: 'mypod', 
-	name: 'mypod',
+	name: 'mypod',	
 	containers: [
-		containerTemplate(name: 'docker', image: 'docker', ttyEnabled: true),
+		containerTemplate(name: 'jnlp', image: 'jenkins/jnlp-slave:alpine'),
+		containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true, workingDir: '/home/jenkins/agent'),
 	],
 	volumes: [
 		hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
