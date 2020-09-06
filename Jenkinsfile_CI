@@ -17,7 +17,7 @@ podTemplate(
         ]
     ) {
     node(label) {
-        dir(workdir) {
+     
             container('docker') {
                 stage('Checkout') {
                     timeout(time: 3, unit: 'MINUTES') {
@@ -45,12 +45,14 @@ podTemplate(
                         }
                     }
                 }
-
-                stage('Docker Build') {
-                    echo "Building docker image..."
-                    //sh "docker build -t $tag -f jenkins-docker/Dockerfile ."
-                    sh script: 'docker build ./producer -t benpony/py-producer'
-                    sh script: 'docker build ./consumer -t benpony/py-consumer'
+                
+                dir(workdir) {
+                    stage('Docker Build') {
+                        echo "Building docker image..."
+                        //sh "docker build -t $tag -f jenkins-docker/Dockerfile ."
+                        sh script: 'docker build ./producer -t benpony/py-producer'
+                        sh script: 'docker build ./consumer -t benpony/py-consumer'
+                    }
                 }
             }
         }
