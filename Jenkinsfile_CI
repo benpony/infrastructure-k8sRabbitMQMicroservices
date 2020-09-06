@@ -17,47 +17,48 @@ podTemplate(
         ]
 ) {
     node(label) {
-        dir(workdir) {
-            container('docker') {
-                stage('Checkout') {
-                    timeout(time: 3, unit: 'MINUTES') {
-                        checkout(
-                            [
-                                $class: 'GitSCM', 
-                                branches: [[name: '*/master']], 
-                                doGenerateSubmoduleConfigurations: false, 
-                                extensions: [], 
-                                submoduleCfg: [], 
-                                userRemoteConfigs: [
-                                    [url: 'https://github.com/benpony/infrastructure-k8sRabbitMQMicroservices.git']
-                                ]
-                            ]
-                        )
 
-                        withCredentials([
-                            usernamePassword(
-                                credentialsId: 'docker-hub', 
-                                usernameVariable: 'DOCKERHUB_USER', 
-                                passwordVariable: 'DOCKERHUB_PASSWORD'
-                            )
-                        ]) {
-                            sh script: "docker login -u  ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}"
-                        }
+        container('docker') {
+            
+            stage('Checkout') {
+                timeout(time: 3, unit: 'MINUTES') {
+                    checkout(
+                        [
+                            $class: 'GitSCM', 
+                            branches: [[name: '*/master']], 
+                            doGenerateSubmoduleConfigurations: false, 
+                            extensions: [], 
+                            submoduleCfg: [], 
+                            userRemoteConfigs: [
+                                [url: 'https://github.com/benpony/infrastructure-k8sRabbitMQMicroservices.git']
+                            ]
+                        ]
+                    )
+
+                    withCredentials([
+                        usernamePassword(
+                            credentialsId: 'docker-hub', 
+                            usernameVariable: 'DOCKERHUB_USER', 
+                            passwordVariable: 'DOCKERHUB_PASSWORD'
+                        )
+                    ]) {
+                        sh script: "docker login -u  ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}"
                     }
                 }
-                
-                stage('Docker Build') {
-                    echo "Building docker image..."
-                    //sh "docker build -t $tag -f jenkins-docker/Dockerfile ."
-                    sh script: 'docker build ./producer -t benpony/py-producer'
-                    sh script: 'docker build ./consumer -t benpony/py-consumer'
-                }
-
-                stage('Push') {
-                    sh script: 'docker push benpony/py-consumer:latest'
-                    sh script: 'docker push benpony/py-producer:latest'
-                }
             }
+            
+            stage('Docker Build') {
+                echo "Building docker image..."
+                //sh "docker build -t $tag -f jenkins-docker/Dockerfile ."
+                sh script: 'docker build ./producer -t benpony/py-producer'
+                sh script: 'docker build ./consumer -t benpony/py-consumer'
+            }
+
+            stage('Docker Push') {
+                sh script: 'docker push benpony/py-consumer:latest'
+                sh script: 'docker push benpony/py-producer:latest'
+            }
+
         }
     }
 }
