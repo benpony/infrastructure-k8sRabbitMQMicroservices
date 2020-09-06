@@ -1,0 +1,23 @@
+podTemplate(containers: [containerTemplate(args: '', command: '', image: 'docker', livenessProbe: containerLivenessProbe(execArgs: '', failureThreshold: 0, initialDelaySeconds: 0, periodSeconds: 0, successThreshold: 0, timeoutSeconds: 0), name: 'docker', resourceLimitCpu: '', resourceLimitMemory: '', resourceRequestCpu: '', resourceRequestMemory: '', ttyEnabled: true, workingDir: '/home/jenkins/agent')], label: 'mypod', name: 'mypod')  {
+    node('mypod'){
+		container('docker'){
+			stage("Checkout"){
+				withCredentials([usernamePassword(credentialsId: 'docker-hub',usernameVariable: 'DOCKERHUB_USER',passwordVariable: 'DOCKERHUB_PASSWORD')]){
+					sh script: "docker login -u  ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}"		
+				}
+			}
+			stage("Build"){
+				checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/benpony/infrastructure-k8sRabbitMQMicroservices.git']]])
+				sh script: "sleep 2m"
+				sh script: "cd /home/jenkins/agent/workspace/pipeline/src"
+				sh script: "docker build ./producer -t benpony/py-producer"         // "docker build ./src/consumer -t /consumer"
+				sh script: "docker build ./consumer -t benpony/py-consumer"         // "docker build ./src/producer -t /producer"
+			}
+			stage("Push"){
+				sh script: "cd /home/jenkins/agent/workspace/pipeline/src"
+				sh script: "docker push benpony/py-consumer:latest "                // "docker push evyatare92/consumer"
+				sh script: "docker push benpony/py-producer:latest "                // "docker push evyatare92/producer"
+			}
+		}
+	}
+}

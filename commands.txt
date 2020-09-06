@@ -67,3 +67,36 @@ $ helm upgrade --install py-rmq-consumer ./deployment
 $ helm uninstall py-rmq-producer && \
   helm install py-rmq-producer ./deployment
 ```
+
+
+CI / CD
+ - - - - - -
+ install jenkins
+ https://github.com/bitnami/charts/tree/master/bitnami/jenkins/#installing-the-chart
+
+```
+$ helm install jenkins jenkinsci/jenkins
+```
+
+##outputNAME: jenkins
+LAST DEPLOYED: Sun Sep  6 13:21:32 2020
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+NOTES:
+1. Get your 'admin' user password by running:
+  printf $(kubectl get secret --namespace default jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode);echo
+2. Get the Jenkins URL to visit by running these commands in the same shell:
+  export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/component=jenkins-master" -l "app.kubernetes.io/instance=jenkins" -o jsonpath="{.items[0].metadata.name}")
+  echo http://127.0.0.1:8080
+  kubectl --namespace default port-forward $POD_NAME 8080:8080
+
+3. Login with the password from step 1 and the username: admin
+
+4. Use Jenkins Configuration as Code by specifying configScripts in your values.yaml file, see documentation: http:///configuration-as-code and examples: https://github.com/jenkinsci/configuration-as-code-plugin/tree/master/demos
+
+For more information on running Jenkins on Kubernetes, visit:
+https://cloud.google.com/solutions/jenkins-on-container-engine
+For more information about Jenkins Configuration as Code, visit:
+https://jenkins.io/projects/jcasc/
+
