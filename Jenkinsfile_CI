@@ -32,7 +32,11 @@ podTemplate(
                             ]
                         ]
                     )
+                }
+            }
 
+            stage('Docker Build') {
+                container('docker') {
                     withCredentials([
                         usernamePassword(
                             credentialsId: 'docker-hub', 
@@ -42,11 +46,7 @@ podTemplate(
                     ]) {
                         sh script: "docker login -u  ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}"
                     }
-                }
-            }
 
-            stage('Docker Build') {
-                container('docker') {
                     echo "Building docker image..."
                     //sh "docker build -t $tag -f jenkins-docker/Dockerfile ."
                     sh script: 'docker build ./producer -t benpony/py-producer'
