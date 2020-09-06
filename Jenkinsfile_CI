@@ -2,37 +2,54 @@
 
 def label = "docker-jenkins-${UUID.randomUUID().toString()}"
 def home = "/home/jenkins"
+//def agent = "${home}/agent"
 def workspace = "${home}/workspace/build-docker-jenkins"
-def jenkinsdir = "${workspace}/src/localhost/docker-jenkins/"
+def dockerJenkinsDir = "${workspace}/src/localhost/docker-jenkins/"
 
 podTemplate(
     label: label,
     containers: [
         containerTemplate(name: 'jnlp', image: 'jenkins/jnlp-slave:alpine'),
-        containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true, workingDir: '/home/jenkins/agent'),
+        containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true),
     ],
     volumes: [
         hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
     ]) {
     node(label) {
-        dir(jenkinsdir) {
+        dir(dockerJenkinsDir) {
             container('docker') {
                 stage('Checkout') {
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                    withCredentials([
+                        usernamePassword(
+                            credentialsId: 'docker-hub', 
+                            usernameVariable: 'DOCKERHUB_USER', 
+                            passwordVariable: 'DOCKERHUB_PASSWORD'
+                        )
+                    ]) {
                         sh script: "docker login -u  ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}"
                     }
                 }
                 stage('Build') {
-                    checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/benpony/infrastructure-k8sRabbitMQMicroservices.git']]])
-
-                    sh script: 'docker build ./producer -t benpony/py-producer'         // "docker build ./src/consumer -t /consumer"
-                    sh script: 'docker build ./consumer -t benpony/py-consumer'         // "docker build ./src/producer -t /producer"
+                    checkout(
+                        [
+                            $class: 'GitSCM', 
+                            branches: [[name: '*/master']], 
+                            doGenerateSubmoduleConfigurations: false, 
+                            extensions: [], 
+                            submoduleCfg: [], 
+                            userRemoteConfigs: [
+                                [url: 'https://github.com/benpony/infrastructure-k8sRabbitMQMicroservices.git']
+                            ]
+                        ]
+                    )
+                    sh script: 'docker build ./producer -t benpony/py-producer'
+                    sh script: 'docker build ./consumer -t benpony/py-consumer'
                 }
                 stage('Push') {
-                    sh script: 'docker push benpony/py-consumer:latest '                // "docker push evyatare92/consumer"
-                    sh script: 'docker push benpony/py-producer:latest '                // "docker push evyatare92/producer"
+                    sh script: 'docker push benpony/py-consumer:latest'
+                    sh script: 'docker push benpony/py-producer:latest'
                 }
             }
         }
     }
-    }
+}
