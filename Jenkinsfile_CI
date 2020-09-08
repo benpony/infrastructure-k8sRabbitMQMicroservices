@@ -4,7 +4,6 @@ def label = "docker-jenkins-${UUID.randomUUID().toString()}"
 
 podTemplate(
     label: label,
-    serviceAccount: 'jenkins-ci',
     containers: [ 
         containerTemplate(
             name: 'docker', 
@@ -94,6 +93,11 @@ podTemplate(
 
             container('helm') { 
                 sh 'helm init --client-only --skip-refresh'
+                
+                echo "Creating local chartmuseum repository..."
+                sh script: 'helm install chartmuseum stable/chartmuseum'
+                sh script: 'helm plugin install https://github.com/chartmuseum/helm-push'
+                sh script: 'helm repo add chartmuseum http://localhost:32688'
                 
                 echo "Packeging helm charts..."
                 sh script: 'helm package consumer/deployment/'
