@@ -88,6 +88,7 @@ podTemplate(
         stage('Deploying Applications') {
             container('helm') {              
                 echo "Creating local chartmuseum repository..."
+                sh 'helm repo update'
                 sh script: 'helm install chartmuseum stable/chartmuseum'
                 sh script: 'helm plugin install https://github.com/chartmuseum/helm-push'
                 sh script: 'helm repo add chartmuseum http://localhost:32688'
