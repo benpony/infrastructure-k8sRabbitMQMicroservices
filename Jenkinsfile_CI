@@ -87,8 +87,8 @@ podTemplate(
 
         stage('Deploying Applications') {
             container('helm') {         
-                echo "Installing git"    
-                sh: 'sudo su jenkins' 
+                echo "Installing git"
+                sh: 'sudo su - jenkins'
                 sh: 'sudo apt-get update'
                 sh: 'sudo apt-get install git'
                 sh: 'git --version'
