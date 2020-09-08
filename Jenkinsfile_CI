@@ -86,7 +86,11 @@ podTemplate(
         }
 
         stage('Deploying Applications') {
-            container('helm') {              
+            container('helm') {         
+                echo "Installing git"     
+                sh script: 'sudo apt-get update'
+                sh script: 'sudo apt-get install git'
+                
                 echo "Adding Helm Chartmuseum dependencies"
                 sh script: 'helm plugin install https://github.com/chartmuseum/helm-push'
                 sh script: 'helm repo add chartmuseum http://localhost:32688'
