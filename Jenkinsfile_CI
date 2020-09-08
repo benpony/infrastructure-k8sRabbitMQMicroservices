@@ -83,12 +83,7 @@ podTemplate(
             }
         }
 
-        stage('Check running containers') {
-        
-            container('jnlp') { 
-                sh 'kubectl get pods -n default'  
-            }
-
+        stage('Deploying Applications') {
             container('helm') { 
                 sh 'helm init --client-only --skip-refresh'
                 
