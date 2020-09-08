@@ -4,6 +4,7 @@ def label = "docker-jenkins-${UUID.randomUUID().toString()}"
 
 podTemplate(
     label: label,
+    serviceAccount: 'jenkins',
     containers: [ 
         containerTemplate(
             name: 'docker', 

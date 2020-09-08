@@ -144,3 +144,13 @@ $ helm push deployment/ chartmuseum
 $ helm repo update
 $ helm pull chartmuseum/rmqapps-consumer
 $ helm upgrade --install consumer chartmuseum/rmqapps-consumer
+
+..
+
+# give permissions for default service account on default namespace
+# TODO should be 'jenkins' service account
+```
+$ kubectl apply -f jenkins/jenkins-service-account.yaml 
+$ kubectl create clusterrolebinding service-reader-pod --clusterrole=service-reader --serviceaccount=jenkins:default
+```
+
