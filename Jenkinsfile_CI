@@ -43,76 +43,71 @@ podTemplate(
     ]) {
 
     node(label) {
-
-      
-            
-            stage('Checkout') {
-                timeout(time: 3, unit: 'MINUTES') {
-                    checkout(
-                        [
-                            $class: 'GitSCM', 
-                            branches: [[name: '*/master']], 
-                            doGenerateSubmoduleConfigurations: false, 
-                            extensions: [], 
-                            submoduleCfg: [], 
-                            userRemoteConfigs: [
-                                [url: 'https://github.com/benpony/infrastructure-k8sRabbitMQMicroservices.git']
-                            ]
+        stage('Checkout Git and Docker Login') {
+            timeout(time: 3, unit: 'MINUTES') {
+                checkout(
+                    [
+                        $class: 'GitSCM', 
+                        branches: [[name: '*/master']], 
+                        doGenerateSubmoduleConfigurations: false, 
+                        extensions: [], 
+                        submoduleCfg: [], 
+                        userRemoteConfigs: [
+                            [url: 'https://github.com/benpony/infrastructure-k8sRabbitMQMicroservices.git']
                         ]
+                    ]
+                )
+
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'docker-hub', 
+                        usernameVariable: 'DOCKERHUB_USER', 
+                        passwordVariable: 'DOCKERHUB_PASSWORD'
                     )
-
-                    withCredentials([
-                        usernamePassword(
-                            credentialsId: 'docker-hub', 
-                            usernameVariable: 'DOCKERHUB_USER', 
-                            passwordVariable: 'DOCKERHUB_PASSWORD'
-                        )
-                    ]) {
-                        sh script: "docker login -u  ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}"
-                    }
+                ]) {
+                    sh script: "docker login -u  ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}"
                 }
             }
-            
-            stage('Docker Build') {
-                container('docker') {
-                    echo "Building docker image..."
-                    sh script: 'docker build ./producer -t benpony/py-producer'
-                    sh script: 'docker build ./consumer -t benpony/py-consumer'
-                }
-            }
-
-            stage('Docker Push') {
-                container('docker') {
-                    echo "Pushing docker image..."
-                    sh script: 'docker push benpony/py-consumer:latest'
-                    sh script: 'docker push benpony/py-producer:latest'
-                }
-            }
-
-            stage('Check running containers') {
-          
-                container('kubectl') { 
-                    sh 'kubectl get pods -n default'  
-                }
-
-                container('helm') { 
-                    sh 'helm init --client-only --skip-refresh'
-                  
-                    echo "Packeging helm charts..."
-                    sh script: 'helm package consumer/deployment/'
-                    sh script: 'helm package producer/deployment/'
-
-                    echo "Pushing helm charts..."
-                    sh script: 'helm push consumer/deployment/ chartmuseum'
-                    sh script: 'helm push producer/deployment/ chartmuseum' 
-
-                    echo "Deploying charts to cluster..."
-                    sh 'helm repo update'
-                    sh script: 'helm upgrade --install consumer chartmuseum/rmqapps-consumer'
-                    sh script: 'helm upgrade --install consumer chartmuseum/rmqapps-producer'
-                }
-            } 
-
         }
+        
+        stage('Docker Build') {
+            container('docker') {
+                echo "Building docker image..."
+                sh script: 'docker build ./producer -t benpony/py-producer'
+                sh script: 'docker build ./consumer -t benpony/py-consumer'
+            }
+        }
+
+        stage('Docker Push') {
+            container('docker') {
+                echo "Pushing docker image..."
+                sh script: 'docker push benpony/py-consumer:latest'
+                sh script: 'docker push benpony/py-producer:latest'
+            }
+        }
+
+        stage('Check running containers') {
+        
+            container('kubectl') { 
+                sh 'kubectl get pods -n default'  
+            }
+
+            container('helm') { 
+                sh 'helm init --client-only --skip-refresh'
+                
+                echo "Packeging helm charts..."
+                sh script: 'helm package consumer/deployment/'
+                sh script: 'helm package producer/deployment/'
+
+                echo "Pushing helm charts..."
+                sh script: 'helm push consumer/deployment/ chartmuseum'
+                sh script: 'helm push producer/deployment/ chartmuseum' 
+
+                echo "Deploying charts to cluster..."
+                sh 'helm repo update'
+                sh script: 'helm upgrade --install consumer chartmuseum/rmqapps-consumer'
+                sh script: 'helm upgrade --install consumer chartmuseum/rmqapps-producer'
+            }
+        } 
     }
 }
