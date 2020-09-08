@@ -19,7 +19,3 @@ rules:
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["get"]
-  # should give those permissions here?
-  - apiGroups: [""]
-    resources: ["deployments"]
-    verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
