@@ -56,7 +56,11 @@ podTemplate(
                         ]
                     ]
                 )
-
+            }
+        }
+        
+        stage('Build and push Docker image') {
+            container('docker') {
                 withCredentials([
                     usernamePassword(
                         credentialsId: 'docker-hub', 
@@ -66,20 +70,12 @@ podTemplate(
                 ]) {
                     sh script: "docker login -u  ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}"
                 }
-            }
-        }
-        
-        stage('Docker Build') {
-            container('docker') {
+
                 echo "Building docker image..."
                 sh script: 'docker build ./producer -t benpony/py-producer'
                 sh script: 'docker build ./consumer -t benpony/py-consumer'
-            }
-        }
 
-        stage('Docker Push') {
-            container('docker') {
-                echo "Pushing docker image..."
+                 echo "Pushing docker image..."
                 sh script: 'docker push benpony/py-consumer:latest'
                 sh script: 'docker push benpony/py-producer:latest'
             }
