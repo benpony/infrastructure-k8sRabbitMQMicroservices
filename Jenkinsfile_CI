@@ -16,9 +16,6 @@ podTemplate(
             ttyEnabled: true
         ),
         containerTemplate(
-            name: 'jnlp', 
-        ),
-        containerTemplate(
             name: 'kubectl', 
             image: 'amaceog/kubectl',
             resourceRequestCpu: '100m',
