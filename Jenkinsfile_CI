@@ -4,7 +4,7 @@ def label = "docker-jenkins-${UUID.randomUUID().toString()}"
 
 podTemplate(
     label: label,
-    serviceAccount: 'jenkins-ci'
+    serviceAccount: 'jenkins-ci',
     containers: [ 
         containerTemplate(
             name: 'docker', 
@@ -16,7 +16,7 @@ podTemplate(
             resourceLimitMemory: '500Mi',
             ttyEnabled: true
         ),
-            containerTemplate(
+        containerTemplate(
             name: 'kubectl', 
             image: 'amaceog/kubectl',
             resourceRequestCpu: '100m',
@@ -26,7 +26,7 @@ podTemplate(
             ttyEnabled: true, 
             command: 'cat'
         ),
-            containerTemplate(
+        containerTemplate(
             name: 'helm', 
             image: 'alpine/helm:2.14.0', 
             resourceRequestCpu: '100m',
@@ -112,7 +112,7 @@ podTemplate(
                     sh script: 'helm upgrade --install consumer chartmuseum/rmqapps-producer'
                 }
             } 
-            
+
         }
     }
 }
