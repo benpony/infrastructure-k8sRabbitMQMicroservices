@@ -86,7 +86,7 @@ podTemplate(
 
         stage('Deploying Applications') {
             container('helm') { 
-                sh 'helm init --client-only --skip-refresh'
+                sh 'helm init --skip-refresh'
                 
                 echo "Creating local chartmuseum repository..."
                 sh script: 'helm install chartmuseum stable/chartmuseum'
