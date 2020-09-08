@@ -16,6 +16,9 @@ podTemplate(
             ttyEnabled: true
         ),
         containerTemplate(
+            name: 'jnlp', 
+        ),
+        containerTemplate(
             name: 'kubectl', 
             image: 'amaceog/kubectl',
             resourceRequestCpu: '100m',
@@ -47,7 +50,9 @@ podTemplate(
                 checkout(
                     [
                         $class: 'GitSCM', 
-                        branches: [[name: '*/master']], 
+                        branches: [
+                            [name: '*/master']
+                        ], 
                         doGenerateSubmoduleConfigurations: false, 
                         extensions: [], 
                         submoduleCfg: [], 
@@ -83,7 +88,7 @@ podTemplate(
 
         stage('Check running containers') {
         
-            container('kubectl') { 
+            container('jnlp') { 
                 sh 'kubectl get pods -n default'  
             }
 
