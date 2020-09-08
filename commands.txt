@@ -78,7 +78,8 @@ CI / CD
 $ helm install jenkins jenkinsci/jenkins
 ```
 
-##outputNAME: jenkins
+##output
+NAME: jenkins
 LAST DEPLOYED: Sun Sep  6 13:21:32 2020
 NAMESPACE: default
 STATUS: deployed
@@ -100,3 +101,46 @@ https://cloud.google.com/solutions/jenkins-on-container-engine
 For more information about Jenkins Configuration as Code, visit:
 https://jenkins.io/projects/jcasc/
 
+
+- - -
+install chart on local cluster
+https://github.com/avielb/k8s-experts/blob/master/helm/deploy-repository.txt
+..
+# assert valid chart
+```
+$ helm install test --debug --dry-run ./  
+```
+
+```
+$ helm install chartmuseum -f chartmuseum-values.yaml stable/chartmuseum 
+$ helm plugin install https://github.com/chartmuseum/helm-push
+$ helm repo add chartmuseum http://$(minikube ip):32688
+$ helm repo update
+$ helm push mychart-0.1.0.tgz chartmuseum
+```
+
+## helm install output
+NAME: chartmuseum
+LAST DEPLOYED: Tue Sep  8 15:09:26 2020
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+** Please be patient while the chart is being deployed **
+
+Get the ChartMuseum URL by running:
+
+  export NODE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[0].nodePort}" services chartmuseum-chartmuseum)
+  export NODE_IP=$(kubectl get nodes --namespace default -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT/  
+
+--> http://192.168.99.107:32688/
+
+- - -
+create, upload, pull, install chart
+$ helm package deployment/
+$ helm push deployment/ chartmuseum
+$ helm repo update
+$ helm pull chartmuseum/rmqapps-consumer
+$ helm upgrade --install consumer chartmuseum/rmqapps-consumer

@@ -55,6 +55,25 @@ podTemplate(
                 sh script: 'docker push benpony/py-producer:latest'
             }
 
+            stage('Helm Build') {
+                echo "Packeging helm charts..."
+                sh script: 'helm package consumer/deployment/'
+                sh script: 'helm package producer/deployment/'
+
+                echo "Pushing helm charts..."
+                sh script: 'helm push consumer/deployment/ chartmuseum'
+                sh script: 'helm push producer/deployment/ chartmuseum'
+            }
+            
+            stage('Helm deploy') {
+                echo "Updating helm repositories..."
+                sh script: 'helm repo update'
+
+                echo "Deploying charts to cluster..."
+                sh script: 'helm upgrade --install consumer chartmuseum/rmqapps-consumer'
+                sh script: 'helm upgrade --install consumer chartmuseum/rmqapps-producer'
+            }
+
         }
     }
 }
