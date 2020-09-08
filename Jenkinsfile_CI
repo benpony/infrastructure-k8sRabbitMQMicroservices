@@ -91,6 +91,7 @@ podTemplate(
                 sh: 'sudo su jenkins' 
                 sh: 'sudo apt-get update'
                 sh: 'sudo apt-get install git'
+                sh: 'git --version'
                 
                 echo "Adding Helm Chartmuseum dependencies"
                 sh script: 'helm plugin install https://github.com/chartmuseum/helm-push'
