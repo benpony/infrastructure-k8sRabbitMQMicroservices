@@ -29,7 +29,7 @@ podTemplate(
         ),
         containerTemplate(
             name: 'helm', 
-            image: 'alpine/helm:2.14.0', 
+            image: 'alpine/helm:3.2.3', 
             resourceRequestCpu: '100m',
             resourceLimitCpu: '300m',
             resourceRequestMemory: '300Mi',
@@ -86,9 +86,7 @@ podTemplate(
         }
 
         stage('Deploying Applications') {
-            container('helm') { 
-                sh 'helm init --upgrade --service-account jenkins --history-max 200'
-                
+            container('helm') {              
                 echo "Creating local chartmuseum repository..."
                 sh script: 'helm install chartmuseum stable/chartmuseum'
                 sh script: 'helm plugin install https://github.com/chartmuseum/helm-push'
