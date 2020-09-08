@@ -5,6 +5,7 @@ def label = "docker-jenkins-${UUID.randomUUID().toString()}"
 podTemplate(
     label: label,
     serviceAccount: 'jenkins',
+    cloud: 'kubernetes',
     containers: [ 
         containerTemplate(
             name: 'docker', 
@@ -86,7 +87,7 @@ podTemplate(
 
         stage('Deploying Applications') {
             container('helm') { 
-                sh 'helm init --skip-refresh'
+                sh 'helm init --upgrade --service-account=jenkins --wait'
                 
                 echo "Creating local chartmuseum repository..."
                 sh script: 'helm install chartmuseum stable/chartmuseum'
