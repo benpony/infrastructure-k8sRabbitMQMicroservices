@@ -1,6 +1,6 @@
 # Kubernetes Distributed System Jenkins based CI/CD 
 
-<p/>
+<br/>
 
 ![Image of Yaktocat](https://github.com/benpony/infrastructure-k8sRabbitMQMicroservices/blob/master/KubernetesJenkinsPipleine.png)
 
