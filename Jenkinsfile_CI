@@ -18,8 +18,14 @@ podTemplate(
             ttyEnabled: true
         ),
         containerTemplate(
-            name: 'helm', 
+            name: 'helm-kubectl', 
             image: 'dtzar/helm-kubectl:latest', 
+            command: 'cat', 
+            resourceRequestCpu: '100m',
+            resourceLimitCpu: '300m',
+            resourceRequestMemory: '300Mi',
+            resourceLimitMemory: '500Mi',
+            ttyEnabled: true
         )
     ],
     volumes: [
@@ -69,7 +75,7 @@ podTemplate(
             }
         }
 
-        container('helm') {   
+        container('helm-kubectl') {   
             stage('Deploying Applications') {
                 // echo "Installing git"
                 // sh script: 'sudo su - jenkins'
