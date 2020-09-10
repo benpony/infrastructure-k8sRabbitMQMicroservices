@@ -19,18 +19,11 @@ podTemplate(
         ),
         containerTemplate(
             name: 'helm', 
-            image: 'dtzar/helm-kubectl:latest', 
-            resourceRequestCpu: '100m',
-            resourceLimitCpu: '300m',
-            resourceRequestMemory: '300Mi',
-            resourceLimitMemory: '500Mi',
-            ttyEnabled: true, 
-            command: 'cat'
+            image: 'dtzar/helm-kubectl:3.2.4', 
         )
     ],
     volumes: [
         hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),
-        hostPathVolume(mountPath: '/usr/local/bin/helm', hostPath: '/usr/local/bin/helm')
     ]) {
 
     node(label) {
