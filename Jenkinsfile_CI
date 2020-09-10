@@ -19,21 +19,11 @@ podTemplate(
         ),
         containerTemplate(
             name: 'kubectl', 
-            image: 'amaceog/kubectl',
+            image: 'dtzar/helm-kubectl:3.3.1',
             resourceRequestCpu: '100m',
             resourceLimitCpu: '300m',
             resourceRequestMemory: '300Mi',
             resourceLimitMemory: '500Mi', 
-            ttyEnabled: true, 
-            command: 'cat'
-        ),
-        containerTemplate(
-            name: 'helm', 
-            image: 'alpine/helm:3.2.3', 
-            resourceRequestCpu: '100m',
-            resourceLimitCpu: '300m',
-            resourceRequestMemory: '300Mi',
-            resourceLimitMemory: '500Mi',
             ttyEnabled: true, 
             command: 'cat'
         )
@@ -86,13 +76,13 @@ podTemplate(
         }
 
         stage('Deploying Applications') {
-            echo "Installing git"
-            sh script: 'sudo su - jenkins'
-            sh script: 'sudo apt-get update'
-            sh script: 'sudo apt-get install git'
-            sh script: 'git --version'
+            container('kubectl') {     
+                echo "Installing git"
+                sh script: 'sudo su - jenkins'
+                sh script: 'sudo apt-get update'
+                sh script: 'sudo apt-get install git'
+                sh script: 'git --version'
 
-            container('helm') {         
                 echo "Adding Helm Chartmuseum dependencies"
                 sh script: 'helm plugin install https://github.com/chartmuseum/helm-push'
                 sh script: 'helm repo add chartmuseum http://localhost:32688'
