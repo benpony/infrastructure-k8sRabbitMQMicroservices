@@ -79,6 +79,7 @@ podTemplate(
             stage('Deploying Applications') {
                 echo "Adding Helm Chartmuseum dependencies"
                 sh script: 'helm plugin install https://github.com/chartmuseum/helm-push'
+                sh script: 'echo $(minikube ip)'
                 sh script: 'helm repo add chartmuseum http://192.168.99.107:32688' 
                 sh script: 'helm repo update'
                 
