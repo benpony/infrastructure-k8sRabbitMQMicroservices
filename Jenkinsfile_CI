@@ -9,7 +9,7 @@ podTemplate(
     containers: [ 
         containerTemplate(
             name: 'helm-kubectl', 
-            image: 'dtzar/helm-kubectl:3.3.1',
+            image: 'dtzar/helm-kubectl',
             command: 'cat'
         )
     ],
