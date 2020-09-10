@@ -31,9 +31,8 @@ podTemplate(
     volumes: [
         hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
     ]) {
-
     node(label) {
-          
+        
         container('docker') {   
             stage('Checkout Git and Docker Login') {
                 timeout(time: 3, unit: 'MINUTES') {
@@ -53,7 +52,7 @@ podTemplate(
                     )
                 }
             }
-        
+
             stage('Build and push Docker image') {
                 withCredentials([
                     usernamePassword(
