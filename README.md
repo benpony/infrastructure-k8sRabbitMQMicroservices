@@ -1,3 +1,8 @@
-# Kubernetes Distributed System Jenkins based CI/CD
+# Kubernetes Distributed System Jenkins based CI/CD 
 
-![k8sJenkins](https://github.com/benpony/infrastructure-k8sRabbitMQMicroservices/blob/master/KubernetesJenkinsPipleine.png)
+<br/>
+<br/>
+
+<p align="center">
+  <img src="https://github.com/benpony/infrastructure-k8sRabbitMQMicroservices/blob/master/KubernetesJenkinsPipleine.png">
+</p>
