@@ -34,49 +34,49 @@ podTemplate(
     ]) {
 
     node(label) {
-        stage('Checkout Git and Docker Login') {
-            timeout(time: 3, unit: 'MINUTES') {
-                checkout(
-                    [
-                        $class: 'GitSCM', 
-                        branches: [
-                            [name: '*/master']
-                        ], 
-                        doGenerateSubmoduleConfigurations: false, 
-                        extensions: [], 
-                        submoduleCfg: [], 
-                        userRemoteConfigs: [
-                            [url: 'https://github.com/benpony/infrastructure-k8sRabbitMQMicroservices.git']
+        container('docker-kubectl') {     
+
+            stage('Checkout Git and Docker Login') {
+                timeout(time: 3, unit: 'MINUTES') {
+                    checkout(
+                        [
+                            $class: 'GitSCM', 
+                            branches: [
+                                [name: '*/master']
+                            ], 
+                            doGenerateSubmoduleConfigurations: false, 
+                            extensions: [], 
+                            submoduleCfg: [], 
+                            userRemoteConfigs: [
+                                [url: 'https://github.com/benpony/infrastructure-k8sRabbitMQMicroservices.git']
+                            ]
                         ]
-                    ]
-                )
-            }
-        }
-        
-        stage('Build and push Docker image') {
-            container('docker') {
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'docker-hub', 
-                        usernameVariable: 'DOCKERHUB_USER', 
-                        passwordVariable: 'DOCKERHUB_PASSWORD'
                     )
-                ]) {
-                    sh script: "docker login -u  ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}"
                 }
-
-                echo "Building docker image..."
-                sh script: 'docker build ./producer -t benpony/py-producer'
-                sh script: 'docker build ./consumer -t benpony/py-consumer'
-
-                 echo "Pushing docker image..."
-                sh script: 'docker push benpony/py-consumer:latest'
-                sh script: 'docker push benpony/py-producer:latest'
             }
-        }
+        
+            stage('Build and push Docker image') {
+                    withCredentials([
+                        usernamePassword(
+                            credentialsId: 'docker-hub', 
+                            usernameVariable: 'DOCKERHUB_USER', 
+                            passwordVariable: 'DOCKERHUB_PASSWORD'
+                        )
+                    ]) {
+                        sh script: "docker login -u  ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}"
+                    }
 
-        stage('Deploying Applications') {
-            container('kubectl') {     
+                    echo "Building docker image..."
+                    sh script: 'docker build ./producer -t benpony/py-producer'
+                    sh script: 'docker build ./consumer -t benpony/py-consumer'
+
+                    echo "Pushing docker image..."
+                    sh script: 'docker push benpony/py-consumer:latest'
+                    sh script: 'docker push benpony/py-producer:latest'
+                }
+            }
+
+            stage('Deploying Applications') {
                 echo "Installing git"
                 sh script: 'sudo su - jenkins'
                 sh script: 'sudo apt-get update'
@@ -101,6 +101,7 @@ podTemplate(
                 sh script: 'helm upgrade --install consumer chartmuseum/rmqapps-consumer'
                 sh script: 'helm upgrade --install consumer chartmuseum/rmqapps-producer'
             }
+
         } 
     }
 }
