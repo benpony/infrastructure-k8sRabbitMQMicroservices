@@ -10,11 +10,6 @@ podTemplate(
         containerTemplate(
             name: 'helm-kubectl', 
             image: 'dtzar/helm-kubectl:3.3.1',
-            resourceRequestCpu: '100m',
-            resourceLimitCpu: '300m',
-            resourceRequestMemory: '300Mi',
-            resourceLimitMemory: '500Mi', 
-            ttyEnabled: true, 
             command: 'cat'
         )
     ],
