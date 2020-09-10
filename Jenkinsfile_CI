@@ -8,17 +8,7 @@ podTemplate(
     cloud: 'kubernetes',
     containers: [ 
         containerTemplate(
-            name: 'docker', 
-            image: 'docker', 
-            command: 'cat', 
-            resourceRequestCpu: '100m',
-            resourceLimitCpu: '300m',
-            resourceRequestMemory: '300Mi',
-            resourceLimitMemory: '500Mi',
-            ttyEnabled: true
-        ),
-        containerTemplate(
-            name: 'kubectl', 
+            name: 'helm-kubectl', 
             image: 'dtzar/helm-kubectl:3.3.1',
             resourceRequestCpu: '100m',
             resourceLimitCpu: '300m',
@@ -75,7 +65,6 @@ podTemplate(
                 sh script: 'docker push benpony/py-producer:latest'
             }
 
-
             stage('Deploying Applications') {
                 echo "Installing git"
                 sh script: 'sudo su - jenkins'
@@ -101,7 +90,7 @@ podTemplate(
                 sh script: 'helm upgrade --install consumer chartmuseum/rmqapps-consumer'
                 sh script: 'helm upgrade --install consumer chartmuseum/rmqapps-producer'
             }
-            
+
         } 
     }
 }
