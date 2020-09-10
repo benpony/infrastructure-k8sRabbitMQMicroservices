@@ -8,8 +8,14 @@ podTemplate(
     cloud: 'kubernetes',
     containers: [ 
         containerTemplate(
-            name: 'docker-kubectl-helm', 
-            image: 'alpine/helm:latest'
+            name: 'helm', 
+            image: 'alpine/helm:latest', 
+            resourceRequestCpu: '100m',
+            resourceLimitCpu: '300m',
+            resourceRequestMemory: '300Mi',
+            resourceLimitMemory: '500Mi',
+            ttyEnabled: true, 
+            command: 'cat'
         )
     ],
     volumes: [
@@ -18,7 +24,7 @@ podTemplate(
     ]) {
 
     node(label) {
-        container('docker-kubectl-helm') {     
+        container('helm') {     
 
             stage('Checkout Git and Docker Login') {
                 timeout(time: 3, unit: 'MINUTES') {
