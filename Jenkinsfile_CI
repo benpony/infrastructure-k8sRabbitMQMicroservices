@@ -19,7 +19,7 @@ podTemplate(
         ),
         containerTemplate(
             name: 'helm', 
-            image: 'alpine/', 
+            image: 'alpine/helm:latest', 
             resourceRequestCpu: '100m',
             resourceLimitCpu: '300m',
             resourceRequestMemory: '300Mi',
