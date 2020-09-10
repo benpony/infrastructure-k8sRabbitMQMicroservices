@@ -19,11 +19,11 @@ podTemplate(
         ),
         containerTemplate(
             name: 'helm', 
-            image: 'dtzar/helm-kubectl:3.2.4', 
+            image: 'dtzar/helm-kubectl:latest', 
         )
     ],
     volumes: [
-        hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),
+        hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
     ]) {
 
     node(label) {
