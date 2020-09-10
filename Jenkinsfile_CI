@@ -8,8 +8,8 @@ podTemplate(
     cloud: 'kubernetes',
     containers: [ 
         containerTemplate(
-            name: 'helm-kubectl', 
-            image: 'fluxcd/helm-operator:1.2.0'
+            name: 'docker-kubectl-helm', 
+            image: 'alpine/helm:latest'
         )
     ],
     volumes: [
@@ -18,7 +18,7 @@ podTemplate(
     ]) {
 
     node(label) {
-        container('docker-kubectl') {     
+        container('docker-kubectl-helm') {     
 
             stage('Checkout Git and Docker Login') {
                 timeout(time: 3, unit: 'MINUTES') {
