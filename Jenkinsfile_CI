@@ -8,8 +8,18 @@ podTemplate(
     cloud: 'kubernetes',
     containers: [ 
         containerTemplate(
+            name: 'docker', 
+            image: 'docker', 
+            command: 'cat', 
+            resourceRequestCpu: '100m',
+            resourceLimitCpu: '300m',
+            resourceRequestMemory: '300Mi',
+            resourceLimitMemory: '500Mi',
+            ttyEnabled: true
+        ),
+        containerTemplate(
             name: 'helm', 
-            image: 'alpine/helm:latest', 
+            image: 'alpine/', 
             resourceRequestCpu: '100m',
             resourceLimitCpu: '300m',
             resourceRequestMemory: '300Mi',
@@ -24,8 +34,8 @@ podTemplate(
     ]) {
 
     node(label) {
-        container('helm') {     
-
+          
+        container('docker') {   
             stage('Checkout Git and Docker Login') {
                 timeout(time: 3, unit: 'MINUTES') {
                     checkout(
@@ -64,7 +74,9 @@ podTemplate(
                 sh script: 'docker push benpony/py-consumer:latest'
                 sh script: 'docker push benpony/py-producer:latest'
             }
+        }
 
+        container('helm') {   
             stage('Deploying Applications') {
                 // echo "Installing git"
                 // sh script: 'sudo su - jenkins'
@@ -90,7 +102,7 @@ podTemplate(
                 sh script: 'helm upgrade --install consumer chartmuseum/rmqapps-consumer'
                 sh script: 'helm upgrade --install consumer chartmuseum/rmqapps-producer'
             }
-
-        } 
+        }
+        
     }
 }
