@@ -76,12 +76,12 @@ podTemplate(
             stage('Deploying Applications') {
                 echo "Adding Helm Repository..."
                 sh script: 'helm plugin install https://github.com/chartmuseum/helm-push'
-                sh script: '
+                sh script: '''#!/bin/bash
                     export NODE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[0].nodePort}" services chartmuseum-chartmuseum)
                     export NODE_IP=$(kubectl get nodes --namespace default -o jsonpath="{.items[0].status.addresses[0].address}")
                     echo http://$NODE_IP:$NODE_PORT/  
-                    helm repo add chartmuseum http://$NODE_IP:$NODE_PORT/
-                ' 
+                ''' 
+                sh script: 'helm repo add chartmuseum http://$NODE_IP:$NODE_PORT'
                 sh script: 'helm repo update'
                 
                 echo "Packeging helm charts..."
