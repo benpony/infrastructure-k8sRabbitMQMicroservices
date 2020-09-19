@@ -1,6 +1,6 @@
 $ minikube delete
 $ minikube start --vm-driver=virtualbox --memory 4096 --cpus 2
-$  minikube addons enable ingress
+$ minikube addons enable ingress
 
 - - -
 
@@ -75,7 +75,8 @@ CI / CD
  https://github.com/bitnami/charts/tree/master/bitnami/jenkins/#installing-the-chart
 
 ```
-$ helm install jenkins jenkinsci/jenkins
+$ helm install jenkins 
+$ helm upgrade --install jenkins jenkinsci/jenkins --set master.ingress.enabled=true --set master.ingress.hostName=jenkins.local
 ```
 
 ##output
