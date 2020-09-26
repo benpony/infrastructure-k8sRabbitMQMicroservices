@@ -43,14 +43,11 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     if args.port == None:
-        print "Missing required argument: -p/--port"
+        print("Missing required argument: -p/--port")
         sys.exit(1)
     if args.server == None:
-        print "Missing required argument: -s/--server"
+        print("Missing required argument: -s/--server")
         sys.exit(1)
-
-    # sleep a few seconds to allow RabbitMQ server to come up
-    sleep(5)
 
     logging.basicConfig(level=logging.INFO)
     LOG = logging.getLogger(__name__)

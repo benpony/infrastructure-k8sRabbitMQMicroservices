@@ -1,7 +1,8 @@
-FROM python:2.7-onbuild
-ENV PYTHONPATH /usr/src/app
-COPY producer.py ${PYTHONPATH}
+FROM python:3.7
+ENV PYTHONPATH /usr/src/app/
 WORKDIR ${PYTHONPATH}
+COPY producer.py requirements.txt ${PYTHONPATH}
+RUN pip install -r requirements.txt
 ENTRYPOINT [ "python", \
     "producer.py", \
     "-p", \
@@ -13,10 +14,3 @@ ENTRYPOINT [ "python", \
     "-r", \
     "30" \
 ]
-
-# FROM python:2.7-onbuild
-# ENV PYTHONPATH /usr/src/app
-# WORKDIR /app
-# ADD producer.py /app
-# ADD requirements.txt /app
-# RUN pip install --requirement /app/requirements.txt

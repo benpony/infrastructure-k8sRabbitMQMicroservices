@@ -1,7 +1,8 @@
-FROM python:2.7-onbuild
-ENV PYTHONPATH /usr/src/app
-COPY consumer.py ${PYTHONPATH}
+FROM python:3.7
+ENV PYTHONPATH /usr/src/app/
 WORKDIR ${PYTHONPATH}
+COPY consumer.py requirements.txt ${PYTHONPATH}
+RUN pip install -r requirements.txt
 ENTRYPOINT [ "python", \
     "consumer.py", \
     "-p", \
@@ -9,10 +10,3 @@ ENTRYPOINT [ "python", \
     "-s", \
     "rmq-rabbitmq.default.svc.cluster.local" \
 ]
-
-# FROM python:2.7-onbuild
-# ENV PYTHONPATH /usr/src/app
-# WORKDIR /app
-# ADD producer.py /app
-# ADD requirements.txt /app
-# RUN pip install --requirement /app/requirements.txt
