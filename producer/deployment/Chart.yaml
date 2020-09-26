@@ -6,7 +6,7 @@ version: 0.1.0
 appVersion: 1.16.0
 dependencies:
 - name: rabbitmq
-  version: 3.x.x
+  version: 7.6.8
   repository: https://charts.bitnami.com/bitnami
   condition: rabbitmq.enabled
   tags:

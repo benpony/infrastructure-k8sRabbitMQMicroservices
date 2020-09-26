@@ -8,7 +8,7 @@ ENTRYPOINT [ "python", \
     "-p", \
     "5672", \
     "-s", \
-    "rmq-rabbitmq.default.svc.cluster.local", \
+    "rabbitmq.default.svc.cluster.local", \
     "-m", \
     "'Hello'", \
     "-r", \

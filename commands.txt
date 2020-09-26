@@ -1,7 +1,8 @@
+
+- - -
 $ minikube delete
 $ minikube start --vm-driver=virtualbox --memory 4096 --cpus 2
 $ minikube addons enable ingress
-
 - - -
 
 # install rabbitmq
@@ -14,31 +15,42 @@ $ helm delete rabbitmq bitnami/rabbitmq
 
 # install and set { user: admin pass: secretpassword }
 ```
-$ helm install rabbitmq \
-  --set rabbitmq.username=admin,rabbitmq.password=secretpassword,rabbitmq.erlangCookie=secretcookie \
-    stable/rabbitmq
+$ helm upgrade --install rabbitmq \
+    --set auth.username=admin \
+    --set auth.password=secretpassword \
+    --set auth.erlangCookie=secretcookie \
+    --set ingress.enabled=true \
+    --set ingress.hostName=rabbitmq.local bitnami/rabbitmq
 ```
 ## output
+NAME: rabbitmq
+LAST DEPLOYED: Sat Sep 26 20:24:16 2020
+NAMESPACE: default
+STATUS: deployed
+REVISION: 4
+TEST SUITE: None
+NOTES:
+** Please be patient while the chart is being deployed **
+
 Credentials:
 
     echo "Username      : admin"
-    echo "Password      : $(kubectl get secret --namespace default my-rmq-rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 --decode)"
-    echo "ErLang Cookie : $(kubectl get secret --namespace default my-rmq-rabbitmq -o jsonpath="{.data.rabbitmq-erlang-cookie}" | base64 --decode)"
+    echo "Password      : $(kubectl get secret --namespace default rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 --decode)"
+    echo "ErLang Cookie : $(kubectl get secret --namespace default rabbitmq -o jsonpath="{.data.rabbitmq-erlang-cookie}" | base64 --decode)"
 
-RabbitMQ can be accessed within the cluster on port  at rmq-rabbitmq.default.svc.
+RabbitMQ can be accessed within the cluster on port  at rabbitmq.default.svc.
 
 To access for outside the cluster, perform the following steps:
 
 To Access the RabbitMQ AMQP port:
 
     echo "URL : amqp://127.0.0.1:5672/"
-    kubectl port-forward --namespace default svc/rmq-rabbitmq 5672:5672
+    kubectl port-forward --namespace default svc/rabbitmq 5672:5672
 
 To Access the RabbitMQ Management interface:
 
     echo "URL : http://127.0.0.1:15672/"
-    kubectl port-forward --namespace default svc/rmq-rabbitmq 15672:15672
-..
+    kubectl port-forward --namespace default svc/rabbitmq 15672:15672
 
 # build docker images
 $ docker build -t <your username>/image-name .
@@ -76,8 +88,10 @@ CI / CD
  https://github.com/bitnami/charts/tree/master/bitnami/jenkins/#installing-the-chart
 
 ```
-$ helm install jenkins 
-$ helm upgrade --install jenkins jenkinsci/jenkins --set master.ingress.enabled=true --set master.ingress.hostName=jenkins.local
+$ helm install jenkins
+$ helm upgrade --install jenkins \
+    --set master.ingress.enabled=true \
+    --set master.ingress.hostName=jenkins.local jenkinsci/jenkins
 ```
 
 ##output
@@ -114,7 +128,7 @@ $ helm install test --debug --dry-run ./
 ```
 
 ```
-$ helm install chartmuseum -f chartmuseum-values.yaml stable/chartmuseum 
+$ helm install chartmuseum stable/chartmuseum
 $ helm plugin install https://github.com/chartmuseum/helm-push
 $ helm repo add chartmuseum http://$(minikube ip):32688
 $ helm repo update
@@ -123,7 +137,7 @@ $ helm push mychart-0.1.0.tgz chartmuseum
 
 ## helm install output
 NAME: chartmuseum
-LAST DEPLOYED: Tue Sep  8 15:09:26 2020
+LAST DEPLOYED: Sat Sep 26 18:57:05 2020
 NAMESPACE: default
 STATUS: deployed
 REVISION: 1
@@ -133,9 +147,9 @@ NOTES:
 
 Get the ChartMuseum URL by running:
 
-  export NODE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[0].nodePort}" services chartmuseum-chartmuseum)
-  export NODE_IP=$(kubectl get nodes --namespace default -o jsonpath="{.items[0].status.addresses[0].address}")
-  echo http://$NODE_IP:$NODE_PORT/  
+  export POD_NAME=$(kubectl get pods --namespace default -l "app=chartmuseum" -l "release=chartmuseum" -o jsonpath="{.items[0].metadata.name}")
+  echo http://127.0.0.1:8080/
+  kubectl port-forward $POD_NAME 8080:8080 --namespace default
 
 --> http://192.168.99.107:32688/
 
