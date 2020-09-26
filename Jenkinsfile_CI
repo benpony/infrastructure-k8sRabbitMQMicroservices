@@ -39,7 +39,7 @@ podTemplate(
                         [
                             $class: 'GitSCM', 
                             branches: [
-                                [name: '*/master']
+                                [name: '*/rancher']
                             ], 
                             doGenerateSubmoduleConfigurations: false, 
                             extensions: [], 
@@ -84,7 +84,7 @@ podTemplate(
                 ''' 
                 sh script: 'helm repo update'
                 
-                echo "Packeging helm charts..."
+                echo "Packaging helm charts..."
                 sh script: 'helm package consumer/deployment/'
                 sh script: 'helm package producer/deployment/'
 
