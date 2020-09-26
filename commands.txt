@@ -9,12 +9,12 @@ https://github.com/bitnami/charts/
 ..
 $ helm repo add bitnami https://charts.bitnami.com/bitnami
 $ helm search repo bitnami | grep "rabbitmq"
-$ helm install my-rmq bitnami/rabbitmq
-$ helm delete my-rmq bitnami/rabbitmq
+$ helm install rabbitmq bitnami/rabbitmq
+$ helm delete rabbitmq bitnami/rabbitmq
 
 # install and set { user: admin pass: secretpassword }
 ```
-$ helm install rmq \
+$ helm install rabbitmq \
   --set rabbitmq.username=admin,rabbitmq.password=secretpassword,rabbitmq.erlangCookie=secretcookie \
     stable/rabbitmq
 ```
