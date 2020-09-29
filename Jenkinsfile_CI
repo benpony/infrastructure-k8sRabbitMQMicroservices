@@ -75,6 +75,7 @@ podTemplate(
         container('helm-kubectl') {
             stage('Deploying Applications') {
                 echo "Adding Helm Repository..."
+                sh script: 'helm install chartmuseum stable/chartmuseum'
                 sh script: 'helm plugin install https://github.com/chartmuseum/helm-push'
                 sh script: '''#!/bin/bash
                     export NODE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[0].nodePort}" services chartmuseum-chartmuseum)

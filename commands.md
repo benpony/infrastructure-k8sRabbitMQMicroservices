@@ -13,21 +13,22 @@ $ helm search repo bitnami | grep "rabbitmq"
 $ helm install rabbitmq bitnami/rabbitmq
 $ helm delete rabbitmq bitnami/rabbitmq
 
-# install and set { user: admin pass: secretpassword }
 ```
 $ helm upgrade --install rabbitmq \
-    --set auth.username=admin \
-    --set auth.password=secretpassword \
-    --set auth.erlangCookie=secretcookie \
     --set ingress.enabled=true \
-    --set ingress.hostName=rabbitmq.local bitnami/rabbitmq
+    --set ingress.hostName=rabbitmq.local \
+    --set auth.username=admin \
+    --set auth.password=admin \
+    --set auth.erlangCookie=secretpassword \
+    bitnami/rabbitmq
 ```
+
 ## output
 NAME: rabbitmq
-LAST DEPLOYED: Sat Sep 26 20:24:16 2020
+LAST DEPLOYED: Tue Sep 29 19:57:35 2020
 NAMESPACE: default
 STATUS: deployed
-REVISION: 4
+REVISION: 1
 TEST SUITE: None
 NOTES:
 ** Please be patient while the chart is being deployed **
@@ -44,13 +45,24 @@ To access for outside the cluster, perform the following steps:
 
 To Access the RabbitMQ AMQP port:
 
+1. Create a port-forward to the AMQP port:
+
+    kubectl port-forward --namespace default svc/rabbitmq 5672:5672 &
     echo "URL : amqp://127.0.0.1:5672/"
-    kubectl port-forward --namespace default svc/rabbitmq 5672:5672
+
+2. Access RabbitMQ using using the obtained URL.
 
 To Access the RabbitMQ Management interface:
 
-    echo "URL : http://127.0.0.1:15672/"
-    kubectl port-forward --namespace default svc/rabbitmq 15672:15672
+1. Get the RabbitMQ Management URL and associate its hostname to your cluster external IP:
+
+   export CLUSTER_IP=$(minikube ip)
+   echo "RabbitMQ Management: http://rabbitmq.local/"
+   echo "$CLUSTER_IP  rabbitmq.local" | sudo tee -a /etc/hosts
+
+2. Open a browser and access RabbitMQ Management using the obtained URL.
+---
+
 
 # build docker images
 $ docker build -t <your username>/image-name .
@@ -72,10 +84,11 @@ $ helm install my-release-name .
 $ helm uninstall my-release-name 
 
 ```
-$ helm install py-rmq-producer ./producer/deployment
-$ helm install py-rmq-consumer ./consumer/deployment
+$ helm install producer ./producer/deployment
+$ helm install consumer ./consumer/deployment
 ..
-$ helm upgrade --install py-rmq-producer ./producer/deployment
+$ helm upgrade --install producer ./deployment
+$ helm upgrade --install consumer ./deployment
 
 $ helm uninstall py-rmq-producer && \
   helm install py-rmq-producer ./deployment
@@ -88,38 +101,27 @@ CI / CD
  https://github.com/bitnami/charts/tree/master/bitnami/jenkins/#installing-the-chart
 
 ```
-$ helm install jenkins
-$ helm upgrade --install jenkins \
-    --set master.ingress.enabled=true \
-    --set master.ingress.hostName=jenkins.local jenkinsci/jenkins
+$ helm install jenkins \
+    --set ingress.enabled=true \
+    --set ingress.hostName=jenkins.local \
+    --set jenkinsUser=admin \
+    --set jenkinsPassword=admin \
+    bitnami/jenkins
+
+$ helm install jenkins \
+    --set master.ingress.enabled=true\
+    --set master.ingress.hostName=jenkins.local \
+    --set master.adminUser=admin \
+    --set master.adminPassword=admin \
+    jenkins/jenkins
 ```
 
-##output
-NAME: jenkins
-LAST DEPLOYED: Sun Sep  6 13:21:32 2020
-NAMESPACE: default
-STATUS: deployed
-REVISION: 1
-NOTES:
-1. Get your 'admin' user password by running:
-  printf $(kubectl get secret --namespace default jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode);echo
-2. Get the Jenkins URL to visit by running these commands in the same shell:
-  export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/component=jenkins-master" -l "app.kubernetes.io/instance=jenkins" -o jsonpath="{.items[0].metadata.name}")
-  echo http://127.0.0.1:8080
-  kubectl --namespace default port-forward $POD_NAME 8080:8080
 
-3. Login with the password from step 1 and the username: admin
 
-4. Use Jenkins Configuration as Code by specifying configScripts in your values.yaml file, see documentation: http:///configuration-as-code and examples: https://github.com/jenkinsci/configuration-as-code-plugin/tree/master/demos
-
-For more information on running Jenkins on Kubernetes, visit:
-https://cloud.google.com/solutions/jenkins-on-container-engine
-For more information about Jenkins Configuration as Code, visit:
-https://jenkins.io/projects/jcasc/
 
 
 - - -
-install chart on local cluster
+install chart registry on local cluster
 https://github.com/avielb/k8s-experts/blob/master/helm/deploy-repository.txt
 ..
 # assert valid chart
