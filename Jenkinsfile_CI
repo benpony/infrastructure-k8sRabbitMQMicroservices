@@ -75,6 +75,8 @@ podTemplate(
         container('helm-kubectl') {
             stage('Deploying Applications') {
                 echo "Adding Helm Repository..."
+                sh script: 'helm repo add stable https://kubernetes-charts.storage.googleapis.com'
+                sh script: 'helm repo update'
                 sh script: 'helm install chartmuseum stable/chartmuseum'
                 sh script: 'helm plugin install https://github.com/chartmuseum/helm-push'
                 sh script: '''#!/bin/bash
@@ -83,8 +85,7 @@ podTemplate(
                     echo http://$NODE_IP:$NODE_PORT/  
                     helm repo add chartmuseum http://$NODE_IP:$NODE_PORT
                 ''' 
-                sh script: 'helm repo update'
-                
+
                 echo "Packaging helm charts..."
                 sh script: 'helm package consumer/deployment/'
                 sh script: 'helm package producer/deployment/'
