@@ -74,17 +74,17 @@ podTemplate(
 
         container('helm-kubectl') {
             stage('Deploying Applications') {
-                echo "Adding Helm Repositories..."
-                sh script: 'helm repo add stable https://kubernetes-charts.storage.googleapis.com'
-                sh script: 'helm repo update'
-                sh script: 'helm upgrade --install chartmuseum stable/chartmuseum'
-                sh script: 'helm plugin install https://github.com/chartmuseum/helm-push'
+                echo "Creating Helm Repository..."
                 sh script: '''#!/bin/bash
+                    helm repo add stable https://kubernetes-charts.storage.googleapis.com
+                    helm repo update
+                    helm upgrade --install chartmuseum stable/chartmuseum
+                    helm plugin install https://github.com/chartmuseum/helm-push
+
                     export SERVICE_PORT=$(kubectl get -o jsonpath="{.spec.ports[0].port}" services chartmuseum-chartmuseum)
                     export SERVICE_ADDRESS=chartmuseum-chartmuseum.default.svc.cluster.local:$SERVICE_PORT
                     echo $SERVICE_ADDRESS
-                    helm repo add pythonsRabbitsQueue $SERVICE_ADDRESS && \
-                    helm repo update
+                    helm repo add pythonsRabbitsQueue $SERVICE_ADDRESS
                 '''
 
                 echo "Packaging helm charts..."
