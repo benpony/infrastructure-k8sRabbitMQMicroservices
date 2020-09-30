@@ -80,7 +80,7 @@ podTemplate(
                 sh script: 'helm upgrade --install chartmuseum stable/chartmuseum'
                 sh script: 'helm plugin install https://github.com/chartmuseum/helm-push'
                 sh script: '''#!/bin/bash
-                    export SERVICE_PORT=$(kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services chartmuseum-chartmuseum)
+                    export SERVICE_PORT=$(kubectl get -o jsonpath="{.spec.ports[0].port}" services chartmuseum-chartmuseum)
                     export SERVICE_ADDRESS=chartmuseum-chartmuseum.default.svc.cluster.local:$SERVICE_PORT
                     echo $SERVICE_ADDRESS
                     helm repo add pythonsRabbitsQueue $SERVICE_ADDRESS && \
