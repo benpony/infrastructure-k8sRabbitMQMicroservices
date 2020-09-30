@@ -74,7 +74,10 @@ podTemplate(
 
         container('helm-kubectl') {
             stage('Deploying Applications') {
-                echo "Adding Helm Repository..."
+                echo "Applying Jenkins Permissions"
+                sh script: 'kubectl apply -f ./jenkins'
+
+                echo "Adding Helm Repositories..."
                 sh script: 'helm repo add stable https://kubernetes-charts.storage.googleapis.com'
                 sh script: 'helm repo update'
                 sh script: 'helm install chartmuseum stable/chartmuseum'
