@@ -80,10 +80,10 @@ podTemplate(
                 sh script: 'helm upgrade --install chartmuseum stable/chartmuseum'
                 sh script: 'helm plugin install https://github.com/chartmuseum/helm-push'
                 sh script: '''#!/bin/bash
-                    export NODE_PORT=$(kubectl get services chartmuseum-chartmuseum -o jsonpath="{.spec.ports[0].port}")
-                    export NODE_IP=$(kubectl get nodes -o jsonpath="{.items[0].status.addresses[0].address}")
-                    echo http://$NODE_IP:$NODE_PORT/  
-                    helm repo add chartmuseum http://$NODE_IP:$NODE_PORT && \
+                    export POD_NAME=$(kubectl get pods --namespace default -l "app=chartmuseum" -l "release=chartmuseum" -o jsonpath="{.items[0].metadata.name}")
+                    echo http://127.0.0.1:8080/
+                    kubectl port-forward $POD_NAME 8080:8080 --namespace default && \
+                    helm repo add pythonsRabbitsQueue http://$NODE_IP:$NODE_PORT && \
                     helm repo update
                 '''
 
@@ -92,13 +92,13 @@ podTemplate(
                 sh script: 'helm package producer/deployment/'
 
                 echo "Pushing helm charts..."
-                sh script: 'helm push --force consumer/deployment/ chartmuseum'
-                sh script: 'helm push --force producer/deployment/ chartmuseum' 
+                sh script: 'helm push --force consumer/deployment/ pythonsRabbitsQueue'
+                sh script: 'helm push --force producer/deployment/ pythonsRabbitsQueue'
 
                 echo "Deploying charts to cluster..."
                 sh 'helm repo update'
-                sh script: 'helm upgrade --install consumer chartmuseum/rmqapps-consumer'
-                sh script: 'helm upgrade --install producer chartmuseum/rmqapps-producer'
+                sh script: 'helm upgrade --install consumer pythonsRabbitsQueue/rmqapps-consumer'
+                sh script: 'helm upgrade --install producer pythonsRabbitsQueue/rmqapps-producer'
             }
         }
     }
