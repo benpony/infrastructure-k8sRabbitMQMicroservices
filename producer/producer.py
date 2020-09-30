@@ -3,8 +3,6 @@ import logging
 import sys
 import argparse
 from argparse import RawTextHelpFormatter
-from time import sleep
-
 
 if __name__ == '__main__':
     examples = sys.argv[0] + " -p 5672 -s rabbitmq -m 'Hello' "
@@ -71,7 +69,5 @@ if __name__ == '__main__':
             LOG.info('Message has been delivered')
         else:
             LOG.warning('Message NOT delivered')
-
-        sleep(2)
 
     connection.close()
