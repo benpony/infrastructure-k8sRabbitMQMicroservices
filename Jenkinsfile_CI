@@ -77,7 +77,7 @@ podTemplate(
                 echo "Adding Helm Repositories..."
                 sh script: 'helm repo add stable https://kubernetes-charts.storage.googleapis.com'
                 sh script: 'helm repo update'
-                sh script: 'helm install chartmuseum stable/chartmuseum'
+                sh script: 'helm upgrade --install chartmuseum stable/chartmuseum'
                 sh script: 'helm plugin install https://github.com/chartmuseum/helm-push'
                 sh script: '''#!/bin/bash
                     export NODE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[0].nodePort}" services chartmuseum-chartmuseum)
