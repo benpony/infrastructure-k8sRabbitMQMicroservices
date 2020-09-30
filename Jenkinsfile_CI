@@ -82,7 +82,7 @@ podTemplate(
                 sh script: '''#!/bin/bash
                     export SERVICE_PORT=$(kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services chartmuseum-chartmuseum)
                     export SERVICE_ADDRESS=chartmuseum-chartmuseum.default.svc.cluster.local:$SERVICE_PORT
-                    echo SERVICE_ADDRESS
+                    echo $SERVICE_ADDRESS
                     helm repo add pythonsRabbitsQueue $SERVICE_ADDRESS && \
                     helm repo update
                 '''
