@@ -74,23 +74,25 @@ podTemplate(
 
         container('helm-kubectl') {
             stage('Deploying Applications') {
-                echo "Adding Helm Repository..."
-                sh script: 'helm plugin install https://github.com/chartmuseum/helm-push'
+                echo "Creating Helm Repository..."
                 sh script: '''#!/bin/bash
+                    helm repo add stable https://kubernetes-charts.storage.googleapis.com
+                    helm repo update
+                    helm upgrade --install chartmuseum --set service.type=NodePort stable/chartmuseum
+                    helm plugin install https://github.com/chartmuseum/helm-push
+
                     export NODE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[0].nodePort}" services chartmuseum-chartmuseum)
                     export NODE_IP=$(kubectl get nodes --namespace default -o jsonpath="{.items[0].status.addresses[0].address}")
                     echo http://$NODE_IP:$NODE_PORT/
-                    helm repo add chartmuseum http://$NODE_IP:$NODE_PORT
-                '''
-                sh script: 'helm repo update'
 
-                echo "Packeging helm charts..."
-                sh script: 'helm package consumer/deployment/'
-                sh script: 'helm package producer/deployment/'
+                    helm repo remove chartmuseum
+                    helm repo add chartmuseum http://$NODE_IP:$NODE_PORT/
+                    helm repo update
+                '''
 
                 echo "Pushing helm charts..."
-                sh script: 'helm push --force consumer/deployment/ chartmuseum'
-                sh script: 'helm push --force producer/deployment/ chartmuseum'
+                sh script: 'helm push consumer/deployment/ chartmuseum'
+                sh script: 'helm push producer/deployment/ chartmuseum'
 
                 echo "Deploying charts to cluster..."
                 sh 'helm repo update'
