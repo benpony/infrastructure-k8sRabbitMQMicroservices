@@ -86,6 +86,7 @@ podTemplate(
                     echo http://$NODE_IP:$NODE_PORT/
 
                     helm repo add pythonsRabbitsQueue http://$NODE_IP:$NODE_PORT/
+                    helm repo update
                 '''
 
                 echo "Packaging helm charts..."
