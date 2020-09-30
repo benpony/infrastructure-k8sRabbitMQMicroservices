@@ -80,8 +80,8 @@ podTemplate(
                 sh script: 'helm upgrade --install chartmuseum stable/chartmuseum'
                 sh script: 'helm plugin install https://github.com/chartmuseum/helm-push'
                 sh script: '''#!/bin/bash
-                    export NODE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[0].nodePort}" services chartmuseum-chartmuseum)
-                    export NODE_IP=$(kubectl get nodes --namespace default -o jsonpath="{.items[0].status.addresses[0].address}")
+                    export NODE_PORT=$(kubectl get services chartmuseum-chartmuseum -o jsonpath="{.spec.ports[0].port}")
+                    export NODE_IP=$(kubectl get nodes -o jsonpath="{.items[0].status.addresses[0].address}")
                     echo http://$NODE_IP:$NODE_PORT/  
                     helm repo add chartmuseum http://$NODE_IP:$NODE_PORT && \
                     helm repo update
