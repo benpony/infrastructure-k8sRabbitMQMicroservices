@@ -88,6 +88,7 @@ podTemplate(
                     helm repo remove chartmuseum
                     helm repo add chartmuseum http://$NODE_IP:$NODE_PORT/
                     helm repo update
+                    sleep 3s
                 '''
 
                 echo "Pushing helm charts..."
