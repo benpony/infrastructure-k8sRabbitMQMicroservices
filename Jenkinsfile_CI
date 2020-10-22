@@ -80,7 +80,8 @@ podTemplate(
                     helm repo update
                     helm upgrade --install chartmuseum \
                         --set service.type=NodePort stable/chartmuseum \
-                        --set env.open.DISABLE_API=false
+                        --set env.open.DISABLE_API=false \
+                        --set env.open.ALLOW_OVERWRITE=true
                     helm plugin install https://github.com/chartmuseum/helm-push.git
 
                     export NODE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[0].nodePort}" services chartmuseum-chartmuseum)
@@ -93,8 +94,8 @@ podTemplate(
                 '''
 
                 echo "Pushing helm charts..."
-                sh script: 'helm push -f consumer/deployment/ chartmuseum'
-                sh script: 'helm push -f producer/deployment/ chartmuseum'
+                sh script: 'helm push --version="latest" consumer/deployment/ chartmuseum'
+                sh script: 'helm push --version="latest" producer/deployment/ chartmuseum'
 
                 echo "Deploying charts to cluster..."
                 sh 'helm repo update'
