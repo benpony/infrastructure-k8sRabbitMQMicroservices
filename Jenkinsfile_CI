@@ -39,7 +39,7 @@ podTemplate(
                         [
                             $class: 'GitSCM', 
                             branches: [
-                                [name: '*/rancher']
+                                [name: '*/master']
                             ], 
                             doGenerateSubmoduleConfigurations: false, 
                             extensions: [], 
