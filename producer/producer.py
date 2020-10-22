@@ -3,8 +3,6 @@ import logging
 import sys
 import argparse
 from argparse import RawTextHelpFormatter
-from time import sleep
-
 
 if __name__ == '__main__':
     examples = sys.argv[0] + " -p 5672 -s rabbitmq -m 'Hello' "
@@ -43,18 +41,15 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     if args.port == None:
-        print "Missing required argument: -p/--port"
+        print("Missing required argument: -p/--port")
         sys.exit(1)
     if args.server == None:
-        print "Missing required argument: -s/--server"
+        print("Missing required argument: -s/--server")
         sys.exit(1)
-
-    # sleep a few seconds to allow RabbitMQ server to come up
-    sleep(5)
 
     logging.basicConfig(level=logging.INFO)
     LOG = logging.getLogger(__name__)
-    credentials = pika.PlainCredentials('admin', 'secretpassword')
+    credentials = pika.PlainCredentials('admin', 'admin')
     parameters = pika.ConnectionParameters(
         args.server,
         int(args.port),
@@ -74,7 +69,5 @@ if __name__ == '__main__':
             LOG.info('Message has been delivered')
         else:
             LOG.warning('Message NOT delivered')
-
-        sleep(2)
 
     connection.close()
