@@ -25,6 +25,12 @@ rules:
   - apiGroups: [""]
     resources: ["nodes"]
     verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["roles"]
+    verbs: ["create", "delete", "get", "list", "patch", "update", "watch" ]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "delete", "get", "list", "patch", "update", "watch" ]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -38,4 +44,18 @@ subjects:
 roleRef:
   kind: ClusterRole
   name: jenkins-admin
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: jenkins-rbac-admin
+subjects:
+  - kind: ServiceAccount
+    name: jenkins
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: admin
   apiGroup: rbac.authorization.k8s.io

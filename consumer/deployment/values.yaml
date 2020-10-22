@@ -73,3 +73,12 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+rabbitmq:
+  enabled: true
+  username: admin
+  password: admin
+  erlangCookie: secretpassword
+  ingress:
+    enabled: true
+    hostName: rabbitmq.local
