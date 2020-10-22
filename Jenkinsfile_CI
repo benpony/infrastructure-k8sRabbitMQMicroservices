@@ -78,7 +78,9 @@ podTemplate(
                 sh script: '''#!/bin/bash
                     helm repo add stable https://kubernetes-charts.storage.googleapis.com
                     helm repo update
-                    helm upgrade --install chartmuseum --set service.type=NodePort stable/chartmuseum
+                    helm upgrade --install chartmuseum \
+                        --set service.type=NodePort stable/chartmuseum \
+                        --set env.open.DISABLE_API=false
                     helm plugin install https://github.com/chartmuseum/helm-push.git
 
                     export NODE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[0].nodePort}" services chartmuseum-chartmuseum)
@@ -88,7 +90,6 @@ podTemplate(
                     helm repo remove chartmuseum
                     helm repo add chartmuseum http://$NODE_IP:$NODE_PORT/
                     helm repo update
-                    sleep 3s
                 '''
 
                 echo "Pushing helm charts..."
