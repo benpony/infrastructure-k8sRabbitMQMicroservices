@@ -93,8 +93,8 @@ podTemplate(
                 '''
 
                 echo "Pushing helm charts..."
-                sh script: 'helm push consumer/deployment/ chartmuseum'
-                sh script: 'helm push producer/deployment/ chartmuseum'
+                sh script: 'helm push -f consumer/deployment/ chartmuseum'
+                sh script: 'helm push -f producer/deployment/ chartmuseum'
 
                 echo "Deploying charts to cluster..."
                 sh 'helm repo update'
